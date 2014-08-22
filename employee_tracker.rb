@@ -15,6 +15,7 @@ def menu
   choice = nil
   until choice == 'e'
     puts "Press 'a' to add employee, 'l' to list all employees and 'd' to delete an employee."
+    puts "Press 'm' to add a division, 's' to list a division and'n' to delete a division."
     puts "Press 'e' to exit."
     choice = gets.chomp
     case choice
@@ -24,6 +25,12 @@ def menu
       list
     when 'd'
       delete_emp
+    when 'm'
+      add_d
+    when 's'
+      list_d
+    when 'n'
+      delete_div
     when 'e'
       puts "Good-bye!"
     else
@@ -54,6 +61,30 @@ def delete_emp
     employee_delete = gets.chomp
     fired_employee = Employee.where({:name => employee_delete}).first
     fired_employee.delete
+end
+
+def add_d
+  puts "What division would you like to add?"
+  division_name = gets.chomp
+  division = Division.new({:name => division_name})
+  division.save
+  puts " '#{division_name}' has been added to the system."
+end
+
+def list_d
+  puts "Here are all the divisions:"
+  divisions = Divisions.all
+  divisions.each { |division| puts division.name}
+end
+
+def delete_div
+  puts "Here are all the divisions:"
+  divisions = Divisions.all
+  divisions.each { |division| puts division.name}
+    puts "What division would you like to delete?"
+    division_delete = gets.chomp
+    dead_div = Division.where({:name => division_delete}).first
+    dead_div.delete
 end
 
 welcome
