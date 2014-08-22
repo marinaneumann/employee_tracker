@@ -1,6 +1,7 @@
 require 'active_record'
 require './lib/employees'
 require './lib/divisions'
+require 'pry'
 
 database_configurations = YAML::load(File.open('./db/config.yml'))
 development_configuration = database_configurations['development']
@@ -15,7 +16,7 @@ def menu
   choice = nil
   until choice == 'e'
     puts "Press 'a' to add employee, 'l' to list all employees and 'd' to delete an employee."
-    puts "Press 'm' to add a division, 's' to list a division and'n' to delete a division."
+    puts "Press 'm' to add a division, 's' to list a division, 'n' to delete a division and 'v' to view inside a division."
     puts "Press 'e' to exit."
     choice = gets.chomp
     case choice
@@ -31,6 +32,8 @@ def menu
       list_d
     when 'n'
       delete_div
+    when 'v'
+      view_div
     when 'e'
       puts "Good-bye!"
     else
@@ -42,7 +45,11 @@ end
 def add
   puts "What employee would you like to add?"
   employee_name = gets.chomp
-  employee = Employee.new({:name => employee_name})
+  puts "What division do they work for?"
+  division_choice = gets.chomp
+  division = Division.new({:name => division_choice})
+  division.save
+  employee = Employee.new({:name => employee_name, :division_id => division.id})
   employee.save
   puts " '#{employee_name}' has been added to the system."
 end
@@ -73,18 +80,29 @@ end
 
 def list_d
   puts "Here are all the divisions:"
-  divisions = Divisions.all
+  divisions = Division.all
   divisions.each { |division| puts division.name}
 end
 
 def delete_div
   puts "Here are all the divisions:"
-  divisions = Divisions.all
+  divisions = Division.all
   divisions.each { |division| puts division.name}
     puts "What division would you like to delete?"
     division_delete = gets.chomp
     dead_div = Division.where({:name => division_delete}).first
     dead_div.delete
+end
+
+def view_div
+  puts "Here are all the divisions:"
+  divisions = Division.all
+  divisions.each { |division| puts division.name}
+
+  puts "Which division would you like to view?"
+  div_choice = gets.chomp
+  current_division = Division.where({:name => div_choice}).first
+  current_division.employees.each {|employee| puts employee.name}
 end
 
 welcome
